@@ -1,0 +1,6 @@
+fastapi
+fastapi-login
+path.py
+uvicorn
+websockets
+python-multipart

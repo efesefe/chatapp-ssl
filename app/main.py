@@ -5,6 +5,7 @@ from fastapi.responses import RedirectResponse,HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi_login import LoginManager
 from fastapi_login.exceptions import InvalidCredentialsException
+from hashlib import sha256
 from os import path
 
 app = FastAPI()
@@ -16,21 +17,24 @@ SECRET = "secret-key"
 manager = LoginManager(SECRET,token_url="/auth/login",use_cookie=True)
 manager.cookie_name = "some-name"
 
-DB = {"u":{"password":"123"}} # unhashed
+DB = {"u":{"password":"a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3"}} # hashed
 
 @manager.user_loader
 def load_user(username:str):
+    
     user = DB.get(username)
     return user
 
 @app.post("/auth/login")
 def login(data: OAuth2PasswordRequestForm = Depends()):
+    #hashed_username = hashlib.sha256(username.encode('utf-8')).hexdigest()
     username = data.username
-    password = data.password
+    password =  sha256(data.password.encode('utf-8')).hexdigest()
     user = load_user(username)
+    # user = load_user(username)
     if not user:
-        raise InvalidCredentialsException
-    elif password != user['password']:
+        raise Exception
+    elif password != user["password"]:
         raise InvalidCredentialsException
     access_token = manager.create_access_token(
         data={"sub":username}

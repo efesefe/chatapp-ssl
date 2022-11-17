@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import FastAPI, Request, WebSocket
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect
 from fastapi import Depends,status
 from fastapi.responses import RedirectResponse,HTMLResponse
 from fastapi.security import OAuth2PasswordRequestForm
@@ -16,7 +16,7 @@ SECRET = "secret-key"
 manager = LoginManager(SECRET,token_url="/auth/login",use_cookie=True)
 manager.cookie_name = "some-name"
 
-DB = {"username":{"password":"qwertyuiop"}} # unhashed
+DB = {"u":{"password":"123"}} # unhashed
 
 @manager.user_loader
 def load_user(username:str):
@@ -69,6 +69,9 @@ class ConnectionManager:
         for connection in self.connections:
             await connection.send_text(data)
 
+    def disconnect(self, websocket: WebSocket):
+        self.connections.remove(websocket)
+
 
 manager2 = ConnectionManager()
 
@@ -76,6 +79,10 @@ manager2 = ConnectionManager()
 @app.websocket("/ws/{client_id}")
 async def websocket_endpoint(websocket: WebSocket, client_id: int):
     await manager2.connect(websocket)
-    while True:
-        data = await websocket.receive_text()
-        await manager2.broadcast(f"Client {client_id}: {data}")
+    try:
+        while True:
+            data = await websocket.receive_text()
+            await manager2.broadcast(f"Client {client_id}: {data}")
+    except WebSocketDisconnect:
+        manager2.disconnect(websocket)
+        await manager2.broadcast(f"Client #{client_id} left the chat")

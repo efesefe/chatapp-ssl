@@ -2,8 +2,11 @@
 
 ## To Run The Application With Docker
 
-`sudo docker container run -p 8000:8000 ibrahimefe/chatapp-ssl:v3`
+`sudo docker container run -p <port>:8000 ibrahimefe/chatapp-ssl:v4`
 
 You should be able to reach the website through
 
-`https://127.0.0.1:8000`
+`https://localhost:<port>`
+
+<b> Username: u </b> <br>
+<b> Password: 123 </b>

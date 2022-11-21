@@ -10,4 +10,4 @@ COPY ./app /code/app
 
 WORKDIR /code/app
 
-CMD [ "uvicorn", "main:app", "--ssl-keyfile","127.0.0.1+1-key.pem", "--host", "0.0.0.0", "--port","8000", "--ssl-certfile",  "127.0.0.1+1.pem", "--log-level", "trace"]   
+CMD [ "uvicorn", "main:app", "--ssl-keyfile","127.0.0.1+1-key.pem", "--host", "0.0.0.0", "--ssl-certfile",  "127.0.0.1+1.pem", "--log-level", "trace"]

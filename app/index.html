@@ -15,7 +15,10 @@
         </ul>
         <script>
             var clientID = Date.now();
-            var ws = new WebSocket(`wss://127.0.0.1:8000/ws/${clientID}`);
+            var current_url = window.location.href;
+            var url_object = new URL(current_url);
+            var port = url_object.port;
+            var ws = new WebSocket(`wss://localhost:${port}/ws/${clientID}`);
             ws.onmessage = processMessage;
             function processMessage(event) {
                 var messages = document.getElementById('messages')
